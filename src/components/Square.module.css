@@ -1,0 +1,35 @@
+.square {
+  width: 40.5px;
+  height: 40.5px;
+  margin: 0;
+  border: 1px solid transparent;
+}
+.on {
+  background-color: #cbdb388a;
+  z-index: 1;
+}
+.food {
+  background-image: url('../apple.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+.head {
+  z-index: 2;
+
+  background-image: url('../snakehead.png');
+  background-size: 200%;
+  background-repeat: no-repeat;
+}
+.on,
+.head,
+.headOnStop {
+  border-radius: 13px;
+}
+.headOnStop {
+  font-weight: bolder;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 60%;
+  background-color: #ccdb38;
+}

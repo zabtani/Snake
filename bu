@@ -1,0 +1,152 @@
+import { useEffect, useRef, useState } from 'react';
+import './App.css';
+import Square from './components/Square';
+const w = 10;
+const h = 20;
+function App() {
+  const randomInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
+  const intervalRef = useRef(() => {});
+  const [snake, setSnake] = useState([
+    { x: 4, y: 4 },
+    { x: 5, y: 4 },
+    { x: 6, y: 4 },
+  ]);
+  const [direction, setDirection] = useState(39);
+  const [food, setFood] = useState({ x: 2, y: 7 });
+  const [score, setScore] = useState(0);
+  const [net, setNet] = useState([]);
+  useEffect(() => {
+    if (direction !== 'stop') {
+      const interval = setInterval(() => {
+        intervalRef.current();
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [direction]);
+  useEffect(() => {
+    let n = [];
+    for (let i = 0; i < w; i++) {
+      for (let x = 0; x < h; x++) {
+        n.push({ x: i, y: x });
+      }
+    }
+    setNet(n);
+  }, []);
+  const snakeOnCube = (cube) => {
+    let onCube = false;
+    snake.forEach((cell) => {
+      if (cell.y === cube.y && cell.x === cube.x) onCube = true;
+    });
+    return onCube;
+  };
+  const checkFood = () => {
+    function randomLocation() {
+      return { x: randomInt(0, w - 1), y: randomInt(0, h - 1) };
+    }
+    let ate = false;
+    if (food.y === snake[0].y && food.x === snake[0].x) {
+      setScore((prevScore) => prevScore + 10);
+      let foodLocation = randomLocation();
+      while (snakeOnCube(foodLocation)) {
+        foodLocation = randomLocation();
+      }
+      console.log(foodLocation);
+      setFood(foodLocation);
+      ate = true;
+    }
+    return ate;
+  };
+
+  const checkDeath = () => {};
+  const move = () => {
+    const death = checkDeath();
+
+    let newSnake = [];
+    switch (direction) {
+      case 37: //left
+        newSnake.push({ y: (snake[0].y - 1) % h, x: snake[0].x });
+        break;
+      case 38: //up
+        newSnake.push({ y: snake[0].y, x: (snake[0].x - 1) % w });
+
+        break;
+      case 39: //right
+        newSnake.push({ y: (snake[0].y + 1) % h, x: snake[0].x });
+        break;
+      case 40: //down
+        newSnake.push({ y: snake[0].y, x: (snake[0].x + 1) % w });
+        break;
+      default:
+        return;
+    }
+    snake.forEach((cell) => {
+      newSnake.push(cell);
+    });
+    const ate = checkFood();
+    !ate && newSnake.pop();
+    setSnake([...newSnake]);
+  };
+  const loopPosition = (callback) => {
+    intervalRef.current = callback;
+  };
+  loopPosition(() => move());
+  const keyPress = (e) => {
+    const { keyCode } = e;
+    if (
+      (direction === 39 && keyCode === 37) ||
+      (direction === 37 && keyCode === 39) ||
+      (direction === 38 && keyCode === 40) ||
+      (direction === 40 && keyCode === 38)
+    ) {
+      return;
+    }
+    if (keyCode === 37 || keyCode === 38 || keyCode === 39 || keyCode === 40) {
+      setDirection(keyCode);
+    } else if (keyCode === 32) {
+      setDirection('stop');
+    }
+  };
+  document.onkeydown = keyPress;
+  const checkBody = (cube) => {
+    let body = { part: false, dir: null };
+    snake.forEach((cell) => {
+      if (cube.y === cell.y && cube.x === cell.x) {
+        if (snake.indexOf(cell) === 0) {
+          body.part = 'head';
+          body.dir = direction;
+        } else {
+          body.part = 'body';
+        }
+      }
+    });
+    return body;
+  };
+  return (
+    <div className="App">
+      <h1>Snake Game</h1>
+      <div className="net">
+        {net.map((cube) => {
+          return (
+            <Square
+              cube={cube}
+              key={Math.random().toString()}
+              bodyPart={checkBody(cube)}
+              food={food.y === cube.y && food.x === cube.x}
+            />
+          );
+        })}
+      </div>
+
+      <p>your score: {score}</p>
+      <p>
+        {direction === 'stop'
+          ? 'Press arrow keys to continue'
+          : 'Press space bar to pause game'}
+      </p>
+    </div>
+  );
+}
+
+export default App;
