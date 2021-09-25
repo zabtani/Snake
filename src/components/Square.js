@@ -22,6 +22,8 @@ function Square(props) {
       case 'stop':
         stop = true;
         break;
+      default:
+        deg = '0';
     }
     sq = (
       <div

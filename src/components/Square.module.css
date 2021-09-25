@@ -20,11 +20,10 @@
   background-size: 200%;
   background-repeat: no-repeat;
 }
-.on,
+/* .on,
 .head,
 .headOnStop {
-  border-radius: 13px;
-}
+} */
 .headOnStop {
   font-weight: bolder;
   display: flex;

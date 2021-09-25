@@ -27,23 +27,21 @@ function App() {
     });
     return onCube;
   };
-  const checkDeath = useCallback(() => {
-    const snakeBody = snake.slice(1);
-    const headHitBody = snakeOnCube(snake[0], snakeBody);
+  const checkDeath = useCallback((headHitBody) => {
     if (headHitBody) {
       setDirection('stop');
       setGameState((prevState) => {
         return { score: prevState.score, gameOver: true };
       });
     }
-  }, [snake]);
+  }, []);
   useEffect(() => {
     if (direction !== 'stop') {
       checkDeath();
       const interval = setInterval(() => {
         setDirectionChanged(false);
         intervalRef.current();
-      }, 55);
+      }, 75);
       return () => clearInterval(interval);
     }
   }, [direction, checkDeath]);
@@ -77,7 +75,9 @@ function App() {
   };
 
   const move = () => {
-    checkDeath();
+    const snakeBody = snake.slice(1);
+    const headHitBody = snakeOnCube(snake[0], snakeBody);
+    checkDeath(headHitBody);
     let newSnake = [];
     switch (direction) {
       case 37: //left
@@ -108,21 +108,22 @@ function App() {
   };
   loopPosition(() => move());
   const keyPress = (e) => {
-    if (directionChanged) return;
-
     const { keyCode } = e;
+    if (keyCode === 32) {
+      setDirection('stop');
+      return;
+    }
     if (
       (direction === 39 && keyCode === 37) ||
       (direction === 37 && keyCode === 39) ||
       (direction === 38 && keyCode === 40) ||
-      (direction === 40 && keyCode === 38)
+      (direction === 40 && keyCode === 38) ||
+      directionChanged
     ) {
       return;
     }
     if (keyCode === 37 || keyCode === 38 || keyCode === 39 || keyCode === 40) {
       setDirection(keyCode);
-    } else if (keyCode === 32) {
-      setDirection('stop');
     }
     setDirectionChanged(true);
   };
