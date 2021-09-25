@@ -16,9 +16,17 @@ function App() {
   const intervalRef = useRef(() => {});
   const [snake, setSnake] = useState(initialSnakeState);
   const [direction, setDirection] = useState(39);
+  const [directionChanged, setDirectionChanged] = useState(false);
   const [food, setFood] = useState(initialFoodState);
   const [gameState, setGameState] = useState(initialGameState);
   const [net, setNet] = useState([]);
+  const snakeOnCube = (cube, part = snake) => {
+    let onCube = false;
+    part.forEach((cell) => {
+      if (cell.y === cube.y && cell.x === cube.x) onCube = true;
+    });
+    return onCube;
+  };
   const checkDeath = useCallback(() => {
     const snakeBody = snake.slice(1);
     const headHitBody = snakeOnCube(snake[0], snakeBody);
@@ -33,8 +41,9 @@ function App() {
     if (direction !== 'stop') {
       checkDeath();
       const interval = setInterval(() => {
+        setDirectionChanged(false);
         intervalRef.current();
-      }, 80);
+      }, 55);
       return () => clearInterval(interval);
     }
   }, [direction, checkDeath]);
@@ -47,13 +56,7 @@ function App() {
     }
     setNet(n);
   }, []);
-  const snakeOnCube = (cube, part = snake) => {
-    let onCube = false;
-    part.forEach((cell) => {
-      if (cell.y === cube.y && cell.x === cube.x) onCube = true;
-    });
-    return onCube;
-  };
+
   const checkFood = () => {
     function randomLocation() {
       return { x: randomInt(0, w - 1), y: randomInt(0, h - 1) };
@@ -105,6 +108,8 @@ function App() {
   };
   loopPosition(() => move());
   const keyPress = (e) => {
+    if (directionChanged) return;
+
     const { keyCode } = e;
     if (
       (direction === 39 && keyCode === 37) ||
@@ -119,6 +124,7 @@ function App() {
     } else if (keyCode === 32) {
       setDirection('stop');
     }
+    setDirectionChanged(true);
   };
   document.onkeydown = keyPress;
   const checkBody = (cube) => {
