@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/Snake/static/css/main.5cb89e3b.chunk.css",
-    "main.js": "/Snake/static/js/main.60b80eef.chunk.js",
-    "main.js.map": "/Snake/static/js/main.60b80eef.chunk.js.map",
+    "main.css": "/Snake/static/css/main.77ebe5fb.chunk.css",
+    "main.js": "/Snake/static/js/main.b48d3c46.chunk.js",
+    "main.js.map": "/Snake/static/js/main.b48d3c46.chunk.js.map",
     "runtime-main.js": "/Snake/static/js/runtime-main.1b346d71.js",
     "runtime-main.js.map": "/Snake/static/js/runtime-main.1b346d71.js.map",
     "static/js/2.0bf435a8.chunk.js": "/Snake/static/js/2.0bf435a8.chunk.js",
@@ -10,7 +10,7 @@
     "static/js/3.80579862.chunk.js": "/Snake/static/js/3.80579862.chunk.js",
     "static/js/3.80579862.chunk.js.map": "/Snake/static/js/3.80579862.chunk.js.map",
     "index.html": "/Snake/index.html",
-    "static/css/main.5cb89e3b.chunk.css.map": "/Snake/static/css/main.5cb89e3b.chunk.css.map",
+    "static/css/main.77ebe5fb.chunk.css.map": "/Snake/static/css/main.77ebe5fb.chunk.css.map",
     "static/js/2.0bf435a8.chunk.js.LICENSE.txt": "/Snake/static/js/2.0bf435a8.chunk.js.LICENSE.txt",
     "static/media/App.css": "/Snake/static/media/frame.ddc091de.png",
     "static/media/Square.module.css": "/Snake/static/media/snakehead.7307108c.png"
@@ -18,7 +18,7 @@
   "entrypoints": [
     "static/js/runtime-main.1b346d71.js",
     "static/js/2.0bf435a8.chunk.js",
-    "static/css/main.5cb89e3b.chunk.css",
-    "static/js/main.60b80eef.chunk.js"
+    "static/css/main.77ebe5fb.chunk.css",
+    "static/js/main.b48d3c46.chunk.js"
   ]
 }
