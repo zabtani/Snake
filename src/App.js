@@ -14,6 +14,7 @@ function App() {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
   const intervalRef = useRef(() => {});
+  const isDesktop = window.innerWidth > 850;
   const [snake, setSnake] = useState(initialSnakeState);
   const [direction, setDirection] = useState(39);
   const [directionChanged, setDirectionChanged] = useState(false);
@@ -153,7 +154,7 @@ function App() {
     <div className="App">
       <header>
         <h1>Snake Game</h1>
-        {!gameState.gameOver && (
+        {isDesktop && !gameState.gameOver && (
           <div className="infoCon">
             <p className="score">Score: {gameState.score} </p>
 
@@ -165,7 +166,7 @@ function App() {
           </div>
         )}
       </header>
-      {!gameState.gameOver && (
+      {isDesktop && !gameState.gameOver && (
         <div className="net">
           {net.map((cube) => {
             return (
@@ -179,6 +180,12 @@ function App() {
           })}
         </div>
       )}
+      {!isDesktop && (
+        <p>
+          Please open this game on a full screen browser tab of a desktop
+          device.
+        </p>
+      )}
       {gameState.gameOver && (
         <div>
           <h2>Game Over</h2>
@@ -189,7 +196,7 @@ function App() {
           <p className="score">Your final Score: {gameState.score} </p>
         </div>
       )}
-      <footer>Game created by omer zabtani // React.js </footer>
+      {!isDesktop && <footer>Game created by omer zabtani // React.js </footer>}
     </div>
   );
 }
