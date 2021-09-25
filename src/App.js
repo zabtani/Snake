@@ -41,7 +41,7 @@ function App() {
       const interval = setInterval(() => {
         setDirectionChanged(false);
         intervalRef.current();
-      }, 75);
+      }, 70);
       return () => clearInterval(interval);
     }
   }, [direction, checkDeath]);
@@ -109,10 +109,6 @@ function App() {
   loopPosition(() => move());
   const keyPress = (e) => {
     const { keyCode } = e;
-    if (keyCode === 32) {
-      setDirection('stop');
-      return;
-    }
     if (
       (direction === 39 && keyCode === 37) ||
       (direction === 37 && keyCode === 39) ||
@@ -122,6 +118,11 @@ function App() {
     ) {
       return;
     }
+    if (keyCode === 32) {
+      setDirection('stop');
+      return;
+    }
+
     if (keyCode === 37 || keyCode === 38 || keyCode === 39 || keyCode === 40) {
       setDirection(keyCode);
     }
