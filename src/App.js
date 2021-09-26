@@ -196,7 +196,7 @@ function App() {
           <p className="score">Your final Score: {gameState.score} </p>
         </div>
       )}
-      {!isDesktop && <footer>Game created by omer zabtani // React.js </footer>}
+      {isDesktop && <footer>Game created by omer zabtani // React.js </footer>}
     </div>
   );
 }
