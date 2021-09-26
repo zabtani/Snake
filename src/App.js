@@ -15,6 +15,7 @@ function App() {
   };
   const intervalRef = useRef(() => {});
   const isDesktop = window.innerWidth > 850;
+  const [loop, setLoop] = useState(true);
   const [snake, setSnake] = useState(initialSnakeState);
   const [direction, setDirection] = useState(39);
   const [directionChanged, setDirectionChanged] = useState(false);
@@ -36,16 +37,22 @@ function App() {
       });
     }
   }, []);
+  const loopPosition = (callback) => {
+    intervalRef.current = callback;
+  };
+
+  loopPosition(() => move());
   useEffect(() => {
-    if (direction !== 'stop') {
+    if (loop) {
       checkDeath();
       const interval = setInterval(() => {
         setDirectionChanged(false);
+        console.log('ah');
         intervalRef.current();
       }, 70);
       return () => clearInterval(interval);
     }
-  }, [direction, checkDeath]);
+  }, [loop, checkDeath]);
   useEffect(() => {
     let n = [];
     for (let i = 0; i < w; i++) {
@@ -103,11 +110,9 @@ function App() {
     const ate = checkFood();
     !ate && newSnake.pop();
     setSnake([...newSnake]);
+    return true;
   };
-  const loopPosition = (callback) => {
-    intervalRef.current = callback;
-  };
-  loopPosition(() => move());
+
   const keyPress = (e) => {
     const { keyCode } = e;
     if (
@@ -121,11 +126,14 @@ function App() {
     }
     if (keyCode === 32) {
       setDirection('stop');
+
+      setLoop(false);
       return;
     }
 
     if (keyCode === 37 || keyCode === 38 || keyCode === 39 || keyCode === 40) {
       setDirection(keyCode);
+      !loop && setLoop(true);
     }
     setDirectionChanged(true);
   };
