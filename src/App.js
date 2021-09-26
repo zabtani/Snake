@@ -47,9 +47,8 @@ function App() {
       checkDeath();
       const interval = setInterval(() => {
         setDirectionChanged(false);
-        console.log('ah');
         intervalRef.current();
-      }, 70);
+      }, 100);
       return () => clearInterval(interval);
     }
   }, [loop, checkDeath]);
