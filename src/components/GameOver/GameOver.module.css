@@ -1,0 +1,21 @@
+.finalScore {
+  font-size: 300%;
+  color: goldenrod;
+}
+
+h2 {
+  font-size: 500%;
+  margin-top: 0;
+}
+button {
+  color: olive;
+  border: 5px solid olive;
+  background-color: rgba(106, 142, 35, 0.253);
+  border-radius: 15px;
+  font-size: 150%;
+  padding: 1%;
+}
+button:hover {
+  color: rgb(172, 172, 2);
+  border-color: rgb(172, 172, 2);
+}

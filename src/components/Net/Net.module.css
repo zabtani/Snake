@@ -1,0 +1,11 @@
+.net {
+  background-color: #f5f5f5;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  width: 850px;
+  border-style: solid;
+  border-width: 7px;
+  padding: 12px 16.5px 13px 16.5px;
+  border-image: url('../../images/frame.png') 10 fill round;
+}

@@ -1,22 +1,22 @@
-import styles from './Square.module.css';
-function Square(props) {
+import classes from './Cube.module.css';
+function Cube(props) {
   const snakeHead = props.bodyPart.part === 'head';
   const snakeBody = props.bodyPart.part === 'body';
-  let sq;
+  let cube;
   if (snakeHead) {
     let deg;
     let stop = false;
     switch (props.bodyPart.dir) {
-      case 37: //left
+      case 'left':
         deg = '0';
         break;
-      case 38: //up
+      case 'up':
         deg = '90';
         break;
-      case 39: //rigth
+      case 'right':
         deg = '180';
         break;
-      case 40: //down
+      case 'down':
         deg = '270';
         break;
       case 'stop':
@@ -25,25 +25,25 @@ function Square(props) {
       default:
         deg = '0';
     }
-    sq = (
+    cube = (
       <div
         style={{ transform: `rotate(${deg}deg)` }}
-        className={`${styles.square} ${
-          !stop ? styles.head : styles.headOnStop
+        className={`${classes.cube} ${
+          !stop ? classes.snakeHead : classes.snakeHeadOnStop
         }  `}
       >
         {stop && <span>Pause</span>}
       </div>
     );
   } else if (props.food) {
-    sq = <div className={`${styles.square}  ${styles.food} `}></div>;
+    cube = <div className={`${classes.cube}  ${classes.food} `}></div>;
   } else if (snakeBody) {
-    sq = <div className={`${styles.square} ${styles.on}`}> </div>;
+    cube = <div className={`${classes.cube} ${classes.snakeBody}`}> </div>;
   } else {
-    sq = <div className={`${styles.square} `}></div>;
+    cube = <div className={`${classes.cube} `}></div>;
   }
 
-  return <>{sq}</>;
+  return <>{cube}</>;
 }
 
-export default Square;
+export default Cube;

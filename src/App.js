@@ -1,149 +1,90 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import './App.css';
-import Square from './components/Square';
-const w = 10;
-const h = 20;
-const initialFoodState = { x: 2, y: 7 };
-const initialGameState = { score: 0, gameOver: false };
-const initialSnakeState = [
-  { x: 0, y: 0 },
-  { x: 1, y: 0 },
-];
+import { useEffect, useRef, useState } from 'react';
+import { randomLocation, parseKeyCode, wrongDirections } from './app-helper';
+import { initialSnakeState, initialGameState, w, h } from './initial-state';
+import classes from './App.module.css';
+import Header from './components/Header/Header';
+import Net from './components/Net/Net';
+import GameOver from './components/GameOver/GameOver';
 function App() {
-  const randomInt = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
-  const intervalRef = useRef(() => {});
   const isDesktop = window.innerWidth > 850;
-  const [loop, setLoop] = useState(true);
+  const intervalRef = useRef(() => {});
+  const [game, setGame] = useState(initialGameState);
   const [snake, setSnake] = useState(initialSnakeState);
-  const [direction, setDirection] = useState(39);
-  const [directionChanged, setDirectionChanged] = useState(false);
-  const [food, setFood] = useState(initialFoodState);
-  const [gameState, setGameState] = useState(initialGameState);
-  const [net, setNet] = useState([]);
-  const snakeOnCube = (cube, part = snake) => {
+  const HeadX = snake.body[0].x;
+  const HeadY = snake.body[0].y;
+  const snakeAction = (property, value) => {
+    setSnake((prev) => {
+      return { ...prev, [property]: value };
+    });
+  };
+  const snakeOnCube = (cube, part = snake.body) => {
     let onCube = false;
     part.forEach((cell) => {
       if (cell.y === cube.y && cell.x === cube.x) onCube = true;
     });
     return onCube;
   };
-  const checkDeath = useCallback((headHitBody) => {
+  const checkDeath = () => {
+    const snakeBody = snake.body.slice(1);
+    const headHitBody = snakeOnCube(snake.body[0], snakeBody);
     if (headHitBody) {
-      setDirection('stop');
-      setGameState((prevState) => {
-        return { score: prevState.score, gameOver: true };
+      setGame((prevState) => {
+        return { score: prevState.score, lost: true, pause: true };
       });
     }
-  }, []);
-  const loopPosition = (callback) => {
+  };
+  const setIntervalRef = (callback) => {
     intervalRef.current = callback;
   };
-
-  loopPosition(() => move());
+  setIntervalRef(() => move());
   useEffect(() => {
-    if (loop) {
-      checkDeath();
+    if (!game.pause) {
       const interval = setInterval(() => {
-        setDirectionChanged(false);
+        snakeAction('directionChanged', false);
         intervalRef.current();
-      }, 100);
+      }, 80);
       return () => clearInterval(interval);
     }
-  }, [loop, checkDeath]);
-  useEffect(() => {
-    let n = [];
-    for (let i = 0; i < w; i++) {
-      for (let x = 0; x < h; x++) {
-        n.push({ x: i, y: x });
-      }
-    }
-    setNet(n);
-  }, []);
-
+  }, [game.pause]);
   const checkFood = () => {
-    function randomLocation() {
-      return { x: randomInt(0, w - 1), y: randomInt(0, h - 1) };
-    }
     let ate = false;
-    if (food.y === snake[0].y && food.x === snake[0].x) {
-      setGameState((prevState) => {
+    if (snake.food.y === HeadY && snake.food.x === HeadX) {
+      setGame((prevState) => {
         return { ...prevState, score: prevState.score + 10 };
       });
       let foodLocation = randomLocation();
       while (snakeOnCube(foodLocation)) {
         foodLocation = randomLocation();
       }
-      setFood(foodLocation);
+      snakeAction('food', foodLocation);
       ate = true;
     }
     return ate;
   };
 
-  const move = () => {
-    const snakeBody = snake.slice(1);
-    const headHitBody = snakeOnCube(snake[0], snakeBody);
-    checkDeath(headHitBody);
-    let newSnake = [];
-    switch (direction) {
-      case 37: //left
-        newSnake.push({ y: (snake[0].y - 1 + h) % h, x: snake[0].x });
-        break;
-      case 38: //up
-        newSnake.push({ y: snake[0].y, x: (snake[0].x - 1 + w) % w });
-
-        break;
-      case 39: //right
-        newSnake.push({ y: (snake[0].y + 1 + h) % h, x: snake[0].x });
-        break;
-      case 40: //down
-        newSnake.push({ y: snake[0].y, x: (snake[0].x + 1 + w) % w });
-        break;
-      default:
-        return;
-    }
-    snake.forEach((cell) => {
-      newSnake.push(cell);
-    });
-    const ate = checkFood();
-    !ate && newSnake.pop();
-    setSnake([...newSnake]);
-    return true;
-  };
-
   const keyPress = (e) => {
     const { keyCode } = e;
-    if (
-      (direction === 39 && keyCode === 37) ||
-      (direction === 37 && keyCode === 39) ||
-      (direction === 38 && keyCode === 40) ||
-      (direction === 40 && keyCode === 38) ||
-      directionChanged
-    ) {
-      return;
-    }
     if (keyCode === 32) {
-      setDirection('stop');
-
-      setLoop(false);
+      pauseGame(true);
       return;
     }
-
     if (keyCode === 37 || keyCode === 38 || keyCode === 39 || keyCode === 40) {
-      setDirection(keyCode);
-      !loop && setLoop(true);
+      game.pause && pauseGame(false);
+      const isWrongDirections = wrongDirections(snake.direction, keyCode);
+      if (isWrongDirections || (snake.directionChanged && !game.pause)) return;
+      const direction = parseKeyCode(keyCode);
+      snakeAction('direction', direction);
     }
-    setDirectionChanged(true);
+    snakeAction('directionChanged', true);
   };
   document.onkeydown = keyPress;
-  const checkBody = (cube) => {
+  const checkCube = (cube) => {
     let body = { part: false, dir: null };
-    snake.forEach((cell) => {
+    snake.body.forEach((cell) => {
       if (cube.y === cell.y && cube.x === cell.x) {
-        if (snake.indexOf(cell) === 0) {
+        if (snake.body.indexOf(cell) === 0) {
           body.part = 'head';
-          body.dir = direction;
+          body.dir = game.pause ? 'stop' : snake.direction;
         } else {
           body.part = 'body';
         }
@@ -151,61 +92,67 @@ function App() {
     });
     return body;
   };
+  const move = () => {
+    checkDeath();
+    let newSnake = [];
+
+    switch (snake.direction) {
+      case 'left':
+        newSnake.push({ y: (HeadY - 1 + h) % h, x: HeadX });
+        break;
+      case 'up':
+        newSnake.push({ y: HeadY, x: (HeadX - 1 + w) % w });
+        break;
+      case 'right':
+        newSnake.push({ y: (HeadY + 1 + h) % h, x: HeadX });
+        break;
+      case 'down':
+        newSnake.push({ y: HeadY, x: (HeadX + 1 + w) % w });
+        break;
+      default:
+        return;
+    }
+    snake.body.forEach((cell) => {
+      newSnake.push(cell);
+    });
+    const ate = checkFood();
+    !ate && newSnake.pop();
+    snakeAction('body', newSnake);
+    return true;
+  };
+  const pauseGame = (value) => {
+    setGame((prev) => {
+      return { ...prev, pause: value };
+    });
+  };
   const restartHandler = () => {
     setSnake(initialSnakeState);
-    setGameState(initialGameState);
-    setDirection(39);
-    setFood(initialFoodState);
+    setGame(initialGameState);
   };
+  const openInDesktopAlert = (
+    <p>
+      Please open this game on a full screen browser tab of a desktop device.
+    </p>
+  );
   return (
-    <div className="App">
-      <header>
-        <h1>Snake Game</h1>
-        {isDesktop && !gameState.gameOver && (
-          <div className="infoCon">
-            <p className="score">Score: {gameState.score} </p>
-
-            <p>
-              {direction === 'stop'
-                ? 'Press arrow keys to continue'
-                : 'Press space bar to pause game'}
-            </p>
-          </div>
-        )}
-      </header>
-      {isDesktop && !gameState.gameOver && (
-        <div className="net">
-          {net.map((cube) => {
-            return (
-              <Square
-                cube={cube}
-                key={Math.random().toString()}
-                bodyPart={checkBody(cube)}
-                food={food.y === cube.y && food.x === cube.x}
-              />
-            );
-          })}
-        </div>
+    <div className={classes.app}>
+      <Header
+        showInfo={isDesktop && !game.lost}
+        score={game.score}
+        onPause={game.pause}
+      />
+      {isDesktop && !game.lost && (
+        <Net
+          size={{ width: w, height: h }}
+          snakeFood={snake.food}
+          check={checkCube}
+          displayFits={isDesktop}
+        />
       )}
-      {!isDesktop && (
-        <p>
-          Please open this game on a full screen browser tab of a desktop
-          device.
-        </p>
-      )}
-      {gameState.gameOver && (
-        <div>
-          <h2>Game Over</h2>
-          <p>Oh no! you ate yourself.</p>
-          <button type="button" onClick={restartHandler}>
-            Restart Game
-          </button>
-          <p className="score">Your final Score: {gameState.score} </p>
-        </div>
-      )}
+      {!isDesktop && openInDesktopAlert}
+      {game.lost && <GameOver score={game.score} restart={restartHandler} />}
       {isDesktop && <footer>Game created by omer zabtani // React.js </footer>}
     </div>
   );
 }
-
 export default App;

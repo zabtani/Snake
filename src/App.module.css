@@ -1,0 +1,19 @@
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+footer {
+  color: olive;
+  text-align: left;
+  padding: 0.1% 0.1% 0.1% 0.5%;
+  font-size: 70%;
+  background-color: rgba(106, 142, 35, 0.253);
+}
+
+@media only screen and (max-width: 850px) {
+  p {
+    padding: 0 6% 65% 6%;
+  }
+}
