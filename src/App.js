@@ -29,7 +29,7 @@ function App() {
     const headHitBody = snakeOnCube(snake.body[0], snakeBody);
     if (headHitBody) {
       setGame((prevState) => {
-        return { score: prevState.score, lost: true, pause: true };
+        return { ...prevState, lost: true, pause: true };
       });
     }
   };
@@ -42,15 +42,21 @@ function App() {
       const interval = setInterval(() => {
         snakeAction('directionChanged', false);
         intervalRef.current();
-      }, 80);
+      }, game.speed);
       return () => clearInterval(interval);
     }
-  }, [game.pause]);
+  }, [game.pause, game.speed]);
   const checkFood = () => {
     let ate = false;
     if (snake.food.y === HeadY && snake.food.x === HeadX) {
-      setGame((prevState) => {
-        return { ...prevState, score: prevState.score + 10 };
+      setGame((prev) => {
+        return {
+          ...prev,
+          score: prev.score + 10,
+          target: prev.target === 1 ? 5 : prev.target - 1,
+          speed: prev.target === 1 ? prev.speed - 5 : prev.speed,
+          level: prev.target === 1 ? prev.level + 1 : prev.level,
+        };
       });
       let foodLocation = randomLocation();
       while (snakeOnCube(foodLocation)) {
@@ -138,8 +144,7 @@ function App() {
     <div className={classes.app}>
       <Header
         showInfo={isDesktop && !game.lost}
-        score={game.score}
-        onPause={game.pause}
+        info={[game.score, game.pause, game.target, game.level]}
       />
       {isDesktop && !game.lost && (
         <Net

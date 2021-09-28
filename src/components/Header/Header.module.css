@@ -18,6 +18,10 @@ h1 {
   align-self: center;
   color: olive;
 }
+
+.level {
+  font-size: 200%;
+}
 @media only screen and (max-width: 850px) {
   header {
     padding: 0 5% 0 5%;

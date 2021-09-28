@@ -3,17 +3,18 @@ import Cube from '../Cube/Cube';
 import { useState, useEffect } from 'react';
 function Net(props) {
   const { snakeFood, check, size } = props;
+  const { width, height } = size;
   const [net, setNet] = useState([]);
 
   useEffect(() => {
     let n = [];
-    for (let i = 0; i < size.width; i++) {
-      for (let x = 0; x < size.height; x++) {
+    for (let i = 0; i < width; i++) {
+      for (let x = 0; x < height; x++) {
         n.push({ x: i, y: x });
       }
     }
     setNet(n);
-  }, [size]);
+  }, [width, height]);
   return (
     <div className={classes.net}>
       {net.map((cube) => {

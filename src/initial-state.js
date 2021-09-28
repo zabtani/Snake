@@ -13,4 +13,11 @@ export const initialSnakeState = {
   direction: 'right',
   directionChanged: false,
 };
-export const initialGameState = { score: 0, lost: false, pause: false };
+export const initialGameState = {
+  score: 0,
+  lost: false,
+  pause: false,
+  target: 5,
+  speed: 90,
+  level: 1,
+};
